@@ -2,19 +2,18 @@ from flask import Flask, render_template, redirect, request
 import re
 
 todo_list = [
-    [1, "Buy Eggs", "email@google.com", "High"],
-    [2, "Buy Milk", "none@such.net", "Low"],
-    [3, "Buy Chicken", 'micro@microsoft.com', "Med"]
+    [1, "buy some food", "email@google.com", "High"],
+    [2, "do some chores", 'yahoo@microsoft.com', "Medium"],
+    [3, "shop for clothes", "none@nothing.net", "Low"]
+
 ]
-
-error_message = ""
-
+error_msg = ""
 app = Flask(__name__)
 
 
 @app.route('/')
 def index():
-    return render_template('index.html', todo_list=todo_list, error_message=error_message)
+    return render_template('index.html', todo_list=todo_list, error_message=error_msg)
 
 
 @app.route('/submit', methods=['POST'])
@@ -23,34 +22,35 @@ def submit():
     email = request.form["Email"]
     priority = request.form["Priority"]
     if todo_list != []:
-        templist = max(todo_list)
-        new_int = int(templist[0]) + 1
+        temp_list = max(todo_list)
+        new_int = int(temp_list[0]) + 1
     else:
         new_int = 1
     regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
 
-    if (re.fullmatch(regex, email)):
-        if priority in ("Low", "Med", "High"):
+    if re.fullmatch(regex, email):
+        if priority in ("Low", "Medium", "High"):
             todo_list.append([new_int, task, email, priority])
+            error_msg = ""
             return redirect('/')
         else:
-            error_message = "Please select a priority"
+            error_msg = "Please select a priority"
     else:
-        error_message = "Invalid Email"
-    return render_template('index.html', todo_list=todo_list, error_message=error_message)
+        error_msg = "Invalid Email"
+    return render_template('index.html', todo_list=todo_list, error_message=error_msg)
 
 
 @app.route('/delete', methods=['POST'])
 def delete():
-    tempID = int(request.form["ID"])
-    mycount = 0
+    temp_id = int(request.form["ID"])
+    my_count = 0
     for i in todo_list:
-        if i[0] == tempID:
+        if i[0] == temp_id:
             break
         else:
-            mycount += 1
-    del todo_list[mycount]
-    print(mycount)
+            my_count += 1
+    del todo_list[my_count]
+    print(my_count)
     return redirect('/')
 
 
